@@ -11,5 +11,5 @@
 
   enable_testing()
   add_test(NAME test_supertux2
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMAND test_supertux2)

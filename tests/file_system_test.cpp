@@ -20,9 +20,15 @@
 
 TEST(FileSystemTest, relpath)
 {
+#ifdef _WIN32
+  ASSERT_EQ(FileSystem::relpath("/levels/juser/level.stl", "/"), "levels\\juser\\level.stl");
+  ASSERT_EQ(FileSystem::relpath("/levels/juser/level.stl", "/levels"), "juser\\level.stl");
+  ASSERT_EQ(FileSystem::relpath("/levels/juser/level.stl", "/levels/juser"), "level.stl");
+#else
   ASSERT_EQ(FileSystem::relpath("/levels/juser/level.stl", "/"), "levels/juser/level.stl");
   ASSERT_EQ(FileSystem::relpath("/levels/juser/level.stl", "/levels"), "juser/level.stl");
   ASSERT_EQ(FileSystem::relpath("/levels/juser/level.stl", "/levels/juser"), "level.stl");
+#endif
 }
 
 TEST(FileSystemTest, join)

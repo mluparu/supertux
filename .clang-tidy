@@ -1,6 +1,6 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,portability-*,performance-*,bugprone-*,misc-*,-misc-unused-parameters'
-WarningsAsErrors: '*,-bugprone-parent-virtual-call,-clang-analyzer-optin.cplusplus.VirtualCall'
+Checks:          'cppcoreguidelines-*,clang-diagnostic-*,clang-analyzer-*,portability-*,performance-*,bugprone-*,misc-*,-misc-unused-parameters,-c++98-compat'
+# WarningsAsErrors: '*,-bugprone-parent-virtual-call,-clang-analyzer-optin.cplusplus.VirtualCall'
 HeaderFilterRegex: 'src/.*hpp'
 AnalyzeTemporaryDtors: true
 ...
