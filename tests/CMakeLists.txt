@@ -9,7 +9,6 @@
     supertux2_lib
     ${CMAKE_THREAD_LIBS_INIT})
 
-  enable_testing()
   add_test(NAME test_supertux2
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMAND test_supertux2)

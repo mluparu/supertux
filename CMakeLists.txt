@@ -46,7 +46,7 @@ endif(COMMAND cmake_policy)
 
 project(SUPERTUX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -113,7 +113,7 @@ if(WIN32)
 
   ## Enable multi-processor compilation (faster)
   if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /JMC")
   endif(MSVC)
 
   ## And shut up about unsafe stuff
@@ -889,6 +889,8 @@ if(BUILD_TESTS)
   target_include_directories(gtest SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/)
   target_include_directories(gtest SYSTEM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/include/)
 
+  enable_testing()
+  
   # # build SuperTux tests
   # file(GLOB TEST_SUPERTUX_SOURCES tests/*.cpp)
   # add_executable(test_supertux2 ${TEST_SUPERTUX_SOURCES})
@@ -897,7 +899,7 @@ if(BUILD_TESTS)
   #  gtest gtest_main
   #  supertux2_lib
   #  ${CMAKE_THREAD_LIBS_INIT})
-
+  # 
   # # add 'make test' target, use 'make test ARGS="-V"' or 'ctest -V' for verbose
   # enable_testing()
   # add_test(NAME test_supertux2

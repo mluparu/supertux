@@ -9,6 +9,8 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
+      "codeAnalysisRuleset": "supertuxRuleset.ruleset",
+      "clangTidyChecks": "*",
       "inheritEnvironments": [ "msvc_x86" ],
       "variables": [
         {
