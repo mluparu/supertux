@@ -47,3 +47,5 @@ ehthumbs.db
 Thumbs.db
 .directory
 *~
+/.vs
+/out/isenseconfig/WSL-Release

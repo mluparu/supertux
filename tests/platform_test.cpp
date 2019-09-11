@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <util\reader_document.hpp>
-#include <util\reader_mapping.hpp>
+#include <util/reader_document.hpp>
+#include <util/reader_mapping.hpp>
 #include <physfs.h>
 #include <codecvt>
-#include <object\gameplatform.hpp>
+#include <object/gameplatform.hpp>
 
 using namespace game;
 #include "platform_search.h"
@@ -53,8 +53,9 @@ TEST(PlatformTest, create_long_platform)
     long_platform.push_back(plat);
   }
 
-  find_longest_jump(Vector(3, 2.0f), long_platform);
+  auto ret = find_longest_jump(Vector(3, 2.0f), long_platform);
 
+  ASSERT_EQ(ret.get_pos().x, 496);
   ASSERT_EQ(long_platform.size(), LONG_PLATFORM_SIZE);
 }
 
@@ -67,8 +68,8 @@ TEST(PlatformTest, create_rock_platform)
     "   (name \"Platform\")\n"
     ")\n");
 
-  auto doc = ReaderDocument::from_stream(in);
-  auto root = doc.get_root();
+  const auto doc = ReaderDocument::from_stream(in);
+  const auto root = doc.get_root();
   ASSERT_EQ("platform", root.get_name());
   ReaderMapping mapping = root.get_mapping();
 
@@ -80,7 +81,8 @@ TEST(PlatformTest, create_rock_platform)
     long_platform.push_back(plat);
   }
 
-  find_longest_jump(Vector(3, 2.0f), long_platform);
+  auto ret = find_longest_jump(Vector(3, 2.0f), long_platform);
+  ASSERT_EQ(ret.get_pos().x, 496);
 
   ASSERT_EQ(long_platform.size(), LONG_PLATFORM_SIZE);
 }

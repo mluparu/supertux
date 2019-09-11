@@ -2,13 +2,8 @@
 #include <utility>
 #include <vector>
 #include <memory>
-#include <object\gameplatform.hpp>
+#include <object/gameplatform.hpp>
 
-typedef std::vector<game::Platform> MovingSpriteVec;
-typedef std::vector<game::Platform>::iterator MovingSpriteVecIter;
+game::Platform find_longest_jump(Vector currentPosition, const std::vector<game::Platform>& platform);
 
-void find_longest_jump(Vector currentPosition, const MovingSpriteVec& platform);
-
-typedef std::vector<game::Rock> RockVec;
-typedef std::vector<game::Rock>::const_iterator RockVecIter;
-void find_longest_jump(Vector currentPosition, const RockVec& platform);
+game::Rock find_longest_jump(Vector currentPosition, const std::vector<game::Rock>& platform);
