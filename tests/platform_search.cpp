@@ -1,7 +1,6 @@
 #include <vector>
 #include <memory>
 #include <object/gameplatform.hpp>
-#include "platform_search.h"
 
 using namespace game;
 
@@ -10,21 +9,21 @@ template<typename ITER> void find_longest_platform(const ITER& input_begin, cons
 const int initial = 7;
 const int hello = 40 + initial;
 
-std::vector<int> make_vector_BaDCoDe() {
+int* getItem(const std::vector<int>& result)
+{
+  int* retVal;
+  if (result.size() > 4) 
+    retVal = new int(result[4]);
+  else
+    *retVal = 0;
+  return 0;
+}
+std::vector<int> make_a_vector() {
   const std::vector<int> result{ 1, 2, 3 };
-  auto finder =
-    [&result]() -> int* {
-      int* retVal;
-      if (result.size() > 4) {
-        retVal = new int(result[4]);
-      }
-      if (result.size() > 4) {
-        *retVal = 0;
-        return NULL;
-      }
-      return 0;
-  };
-  return std::move(result);
+  auto* item = getItem(result);
+  if (!item)
+    return std::move(result);
+  else return {};
 }
 
 Platform find_longest_jump(Vector currentPosition, const std::vector<Platform>& platform)
@@ -85,7 +84,6 @@ void find_longest_platform(
 
 Rock find_longest_jump(Vector currentPosition, const std::vector<Rock>& platform)
 {
-  //TODO: Find curent sprite tux is sitting on
   auto current = platform.begin();
 
   //auto current = std::find_if(platform.begin(), platform.end(), [&currentPosition](const Rock& it)

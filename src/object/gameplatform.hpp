@@ -1,7 +1,7 @@
 #pragma once
 #include <math/vector.hpp>
 
-#define SPRITE_WIDTH (16.0f)
+#define SPRITE_WIDTH (1.0f)
 
 namespace game
 {
@@ -24,12 +24,12 @@ namespace game
     MovingSprite() noexcept {}
     MovingSprite(const io::ReaderMapping&) {}
 
-    bool operator<= (const MovingSprite& other) noexcept { return pos.x <= other.get_pos().x; }
-    bool operator> (const MovingSprite& other) noexcept { return pos.x > other.get_pos().x; }
-    bool operator<= (int other) noexcept { return pos.x <= other; }
-    MovingSprite& operator+= (const MovingSprite& other) noexcept { pos.x += other.get_pos().x; return *this; }
-    MovingSprite& operator+= (int other) noexcept { pos.x += other; return *this; }
-    MovingSprite& operator= (int other) noexcept { pos.x = other; return *this; }
+    bool operator<= (const MovingSprite& other) noexcept { return pos.y <= other.get_pos().y; }
+    bool operator> (const MovingSprite& other) noexcept { return pos.y > other.get_pos().y; }
+    bool operator<= (int other) noexcept { return pos.y <= other; }
+    MovingSprite& operator+= (const MovingSprite& other) noexcept { pos.y += other.get_pos().y; return *this; }
+    MovingSprite& operator+= (int other) noexcept { pos.y += other; return *this; }
+    MovingSprite& operator= (int other) noexcept { pos.y = other; return *this; }
   };
 
   class Platform : public MovingSprite
@@ -38,7 +38,7 @@ namespace game
     Platform(const io::ReaderMapping& mapping) : MovingSprite(mapping) {}
     Platform() noexcept {}
 
-    Platform& operator= (int other) noexcept { pos.x = other; return *this; }
+    Platform& operator= (int other) noexcept { pos.y = other; return *this; }
   };
 
   class Rock : public MovingSprite
@@ -47,6 +47,6 @@ namespace game
     Rock(const io::ReaderMapping& mapping) : MovingSprite(mapping) {}
     Rock() noexcept {}
 
-    Rock& operator= (int other) noexcept { pos.x = other; return *this; }
+    Rock& operator= (int other) noexcept { pos.y = other; return *this; }
   };
 }

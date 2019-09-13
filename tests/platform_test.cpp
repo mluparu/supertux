@@ -53,9 +53,9 @@ TEST(PlatformTest, create_long_platform)
     long_platform.push_back(plat);
   }
 
-  auto ret = find_longest_jump(Vector(3, 2.0f), long_platform);
+  const auto ret = find_longest_jump(Vector(14, 2.0f), long_platform);
 
-  ASSERT_EQ(ret.get_pos().x, 496);
+  ASSERT_EQ(ret.get_pos().x, 13);
   ASSERT_EQ(long_platform.size(), LONG_PLATFORM_SIZE);
 }
 
@@ -81,8 +81,8 @@ TEST(PlatformTest, create_rock_platform)
     long_platform.push_back(plat);
   }
 
-  auto ret = find_longest_jump(Vector(3, 2.0f), long_platform);
-  ASSERT_EQ(ret.get_pos().x, 496);
+  auto ret = find_longest_jump(Vector(14, 2.0f), long_platform);
+  ASSERT_EQ(ret.get_pos().x, 0);
 
   ASSERT_EQ(long_platform.size(), LONG_PLATFORM_SIZE);
 }
