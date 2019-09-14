@@ -5,8 +5,10 @@ variables:
 
 pr:
 - master
+- dev/*
 trigger:
 - master
+- dev/*
 
 jobs:
 
@@ -41,7 +43,7 @@ jobs:
       inputs:
         targetType: 'inline'
         workingDirectory: $(Build.ArtifactStagingDirectory)/x86-Debug
-        script: 'ctest -v'
+        script: 'ctest -V'
 
 - job: Linux_x64
   pool:
@@ -83,7 +85,7 @@ jobs:
       inputs:
         targetType: 'inline'
         workingDirectory: $(Build.ArtifactStagingDirectory)/WSL-Release
-        script: 'ctest -v'
+        script: 'ctest -V'
 
 - job: macos_10_14_hosted
   pool:
@@ -122,4 +124,4 @@ jobs:
       inputs:
         targetType: 'inline'
         workingDirectory: $(Build.ArtifactStagingDirectory)/WSL-Release
-        script: 'ctest -v'
+        script: 'ctest -V'
