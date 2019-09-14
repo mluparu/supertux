@@ -5,8 +5,10 @@ variables:
 
 pr:
 - master
+- dev/*
 trigger:
 - master
+- dev/*
 
 jobs:
 

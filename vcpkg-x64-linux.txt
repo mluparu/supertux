@@ -1,0 +1,16 @@
+--triplet
+x64-linux
+boost-date-time
+boost-filesystem
+boost-format
+boost-locale
+boost-system
+curl
+freetype
+glew
+libogg
+libvorbis
+openal-soft
+sdl2
+sdl2-image
+
