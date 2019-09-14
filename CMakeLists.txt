@@ -32,10 +32,6 @@
 #
 
 
-## Project name to use as command prefix.
-
-project(SUPERTUX)
-
 
 ### CMake configuration
 
@@ -46,9 +42,17 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0023 NEW)
 endif(COMMAND cmake_policy)
 
-set(CMAKE_CXX_STANDARD 14)
+## Project name to use as command prefix.
+
+project(SUPERTUX)
+
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat")
+endif()
+
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/mk/cmake)
 include(ConfigureFiles)
@@ -72,7 +76,7 @@ elseif(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 set(SUPERTUX_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
-set(VCPKG_BUILD OFF CACHE BOOL "Use dependencies installed via vcpkg (not dependency package)")
+set(VCPKG_BUILD ON CACHE BOOL "Use dependencies installed via vcpkg (not dependency package)")
 set(VCPKG_APPLOCAL_DEPS ${VCPKG_BUILD} BOOL)
 ## These variables enable MSVC to find libraries located in "dependencies{32|64}"
 if(WIN32)
@@ -109,7 +113,7 @@ if(WIN32)
 
   ## Enable multi-processor compilation (faster)
   if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /JMC")
   endif(MSVC)
 
   ## And shut up about unsafe stuff
@@ -142,7 +146,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 
 find_package(PNG REQUIRED)
 
-if(WIN32)
+if(WIN32 OR VCPKG_BUILD)
   if(VCPKG_BUILD)
     find_package(SDL2 CONFIG REQUIRED)
     find_path(SDL2_INCLUDE_DIRS SDL2/SDL.h)
@@ -162,11 +166,11 @@ if(WIN32)
     find_path(PHYSFS_INCLUDE_DIR NAMES physfs.h PATHS "${DEPENDENCY_FOLDER}/include/physfs")
   endif(VCPKG_BUILD)
 
-else(WIN32)
+else(WIN32 OR VCPKG_BUILD)
   include(FindPkgConfig)
   pkg_search_module(SDL2 REQUIRED sdl2>=2.0.1)
   pkg_search_module(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
-endif(WIN32)
+endif(WIN32 OR VCPKG_BUILD)
 set(HAVE_SDL TRUE)
 
 option(IS_SUPERTUX_RELEASE "Build as official SuperTux release" OFF)
@@ -244,6 +248,7 @@ if(NOT USE_SYSTEM_PHYSFS)
   set(PHYSFS_PREFIX ${CMAKE_BINARY_DIR}/physfs/)
   ExternalProject_Add(physfs
     SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/physfs/"
+    BUILD_BYPRODUCTS "${PHYSFS_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}physfs${CMAKE_STATIC_LIBRARY_SUFFIX}"
     CMAKE_ARGS
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
     -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
@@ -276,7 +281,8 @@ if(WIN32 AND VCPKG_BUILD)
   list(LENGTH CURL_LIBRARY CURL_LIBRARY_LENGTH)
   if (CURL_LIBRARY_LENGTH EQUAL 1)
     set(CURL_LIBRARY_DEBUG_LIB   ${CURL_LIBRARY})
-      set(CURL_LIBRARY_RELEASE_LIB ${CURL_LIBRARY_DEBUG_LIB}/../../../lib/libcurl.lib)
+      # set(CURL_LIBRARY_RELEASE_LIB ${CURL_LIBRARY_DEBUG_LIB}/../../../lib/libcurl.lib)
+      find_library(CURL_LIBRARY_RELEASE_LIB NAMES libcurl)
       get_filename_component(CURL_LIBRARY_RELEASE_LIB ${CURL_LIBRARY_RELEASE_LIB} REALPATH)
       unset(CURL_LIBRARY CACHE)
       unset(CURL_LIBRARY)
@@ -394,6 +400,7 @@ endif()
 set(SQUIRREL_PREFIX ${CMAKE_BINARY_DIR}/squirrel/ex)
 ExternalProject_Add(squirrel
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/squirrel/"
+  BUILD_BYPRODUCTS "${SQUIRREL_PREFIX}/lib/squirrel.lib" "${SQUIRREL_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}sqstdlib${CMAKE_STATIC_LIBRARY_SUFFIX}"
   CMAKE_ARGS
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -438,6 +445,7 @@ endif()
 set(TINYGETTEXT_PREFIX ${CMAKE_BINARY_DIR}/tinygettext/)
 ExternalProject_Add(tinygettext
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/tinygettext/"
+  BUILD_BYPRODUCTS "${TINYGETTEXT_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}tinygettext${CMAKE_STATIC_LIBRARY_SUFFIX}"
   CMAKE_ARGS
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -465,6 +473,7 @@ find_package(RAQM)
 set(SDL_TTF_PREFIX ${CMAKE_BINARY_DIR}/SDL_ttf/)
 ExternalProject_Add(SDL_ttf
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/SDL_ttf/"
+  BUILD_BYPRODUCTS "${SDL_TTF_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}SDL2_ttf${CMAKE_STATIC_LIBRARY_SUFFIX}"
   CMAKE_ARGS
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -780,6 +789,22 @@ if(WIN32 AND NOT VCPKG_BUILD)
     $<TARGET_FILE_DIR:supertux2_lib>)
 endif(WIN32 AND NOT VCPKG_BUILD)
 
+####
+if(WIN32 AND VCPKG_BUILD)
+  ## Copy external dlls on windows
+  get_property(SQUIRREL_LIB_PATH TARGET squirrel_lib PROPERTY IMPORTED_LOCATION)
+  get_property(SQSTDLIB_LIB_PATH TARGET sqstdlib_lib PROPERTY IMPORTED_LOCATION)
+  get_property(PHYSFS_LIB_PATH TARGET physfs_lib PROPERTY IMPORTED_LOCATION)
+  add_custom_command(TARGET supertux2_lib POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "${SQUIRREL_LIB_PATH}"
+    $<TARGET_FILE_DIR:supertux2_lib>)
+  add_custom_command(TARGET supertux2_lib POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "${SQSTDLIB_LIB_PATH}"
+    $<TARGET_FILE_DIR:supertux2_lib>)
+  add_custom_command(TARGET supertux2_lib POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "${PHYSFS_LIB_PATH}"
+    $<TARGET_FILE_DIR:supertux2_lib>)
+endif(WIN32 AND VCPKG_BUILD)
 ## Link supertux binary with squirrel and other libraries
 
 add_dependencies(supertux2_lib tinygettext)
@@ -844,6 +869,14 @@ endif(HAVE_OPENGL)
 if(HAVE_LIBCURL)
   if(VCPKG_BUILD)
     target_link_libraries(supertux2_lib PUBLIC ${CURL_LIBRARIES})
+    ####
+    if(UNIX AND NOT APPLE)
+      find_package(OpenSSL REQUIRED)
+      target_link_libraries(supertux2_lib PUBLIC OpenSSL::SSL OpenSSL::Crypto)
+    elseif(APPLE)
+      find_library(SECURITY Security)
+      target_link_libraries(supertux2_lib PUBLIC ${SECURITY})
+    endif()
   else()
     target_link_libraries(supertux2_lib PUBLIC ${CURL_LIBRARY})
   endif()
@@ -860,20 +893,23 @@ if(BUILD_TESTS)
   target_include_directories(gtest SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/)
   target_include_directories(gtest SYSTEM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/include/)
 
-  # build SuperTux tests
-  file(GLOB TEST_SUPERTUX_SOURCES tests/*.cpp)
-  add_executable(test_supertux2 ${TEST_SUPERTUX_SOURCES})
-  target_compile_options(test_supertux2 PRIVATE ${WARNINGS_CXX_FLAGS})
-  target_link_libraries(test_supertux2
-    gtest gtest_main
-    supertux2_lib
-    ${CMAKE_THREAD_LIBS_INIT})
-
-  # add 'make test' target, use 'make test ARGS="-V"' or 'ctest -V' for verbose
   enable_testing()
-  add_test(NAME test_supertux2
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMAND test_supertux2)
+  
+  # # build SuperTux tests
+  # file(GLOB TEST_SUPERTUX_SOURCES tests/*.cpp)
+  # add_executable(test_supertux2 ${TEST_SUPERTUX_SOURCES})
+  # target_compile_options(test_supertux2 PRIVATE ${WARNINGS_CXX_FLAGS})
+  # target_link_libraries(test_supertux2
+  #  gtest gtest_main
+  #  supertux2_lib
+  #  ${CMAKE_THREAD_LIBS_INIT})
+  # 
+  # # add 'make test' target, use 'make test ARGS="-V"' or 'ctest -V' for verbose
+  # enable_testing()
+  # add_test(NAME test_supertux2
+  #  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  #  COMMAND test_supertux2)
+  add_subdirectory(tests)
 endif()
 
 ## Install stuff

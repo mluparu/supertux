@@ -1,0 +1,45 @@
+{
+  "configurations": [
+    {
+      "name": "x86-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+      "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
+      "cmakeCommandArgs": "-DBUILD_TESTS=1",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "codeAnalysisRuleset": "supertuxRuleset.ruleset",
+      "clangTidyChecks": "*",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "variables": [
+        {
+          "name": "BUILD_TESTS",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "WSL-Release",
+      "generator": "Unix Makefiles",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeExecutable": "/usr/bin/cmake",
+      "cmakeCommandArgs": "-DBUILD_TESTS=1",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "linux_x64" ],
+      "wslPath": "${defaultWSLPath}",
+      "addressSanitizerRuntimeFlags": "detect_leaks=0",
+      "variables": [
+        {
+          "name": "BUILD_TESTS",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    }
+  ]
+}

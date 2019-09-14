@@ -16,3 +16,6 @@
 [submodule "external/SDL_ttf"]
 	path = external/SDL_ttf
 	url = https://github.com/SuperTux/SDL_ttf
+[submodule ".\\external\\vcpkg"]
+	path = .\\external\\vcpkg
+	url = https://github.com/microsoft/vcpkg.git

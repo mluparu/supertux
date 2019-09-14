@@ -1,0 +1,125 @@
+  
+variables:
+  system.debug: true
+  vcpkgLocation: $(Build.SourcesDirectory)/external/vcpkg
+
+pr:
+- master
+trigger:
+- master
+
+jobs:
+
+- job: VS2019_x86
+  pool:
+    vmImage: windows-2019
+  steps:
+    - checkout: self
+      submodules: recursive
+
+    - task: CacheBeta@0
+      displayName: Cache vcpkg
+      inputs:
+        key: $(Build.SourcesDirectory)/vcpkg-x86-windows.txt | $(Build.SourcesDirectory)/.git/modules/external/vcpkg/HEAD | "$(Agent.OS)"
+        path: '$(vcpkgLocation)'
+
+    - task: lucappa.cmake-ninja-vcpkg-tasks.d855c326-b1c0-4d6f-b1c7-440ade6835fb.run-vcpkg@0
+      displayName: 'Run vcpkg'
+      inputs:
+        vcpkgArguments: '@$(Build.SourcesDirectory)/vcpkg-x86-windows.txt'
+        vcpkgDirectory: $(vcpkgLocation)
+
+    - task: lucappa.cmake-ninja-vcpkg-tasks.f2b1ec7d-bc54-4cc8-b9ed-1bc7f37c9dc6.run-cmake@0
+      displayName: 'Run CMake with CMakeSettings.json'
+      inputs:
+        cmakeListsOrSettingsJson: 'CMakeSettingsJson'
+        useVcpkgToolchainFile: true
+        configurationRegexFilter: 'x86-Debug'
+
+    - task: Bash@3
+      displayName: 'Run CTest'
+      inputs:
+        targetType: 'inline'
+        workingDirectory: $(Build.ArtifactStagingDirectory)/x86-Debug
+        script: 'ctest -v'
+
+- job: Linux_x64
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+    - checkout: self
+      submodules: recursive
+
+    - script: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+        sudo apt-get update -y -q
+        sudo apt-get install dialog apt-utils -y
+        sudo apt-get install gcc-9 g++-9 -y
+        echo "##vso[task.setvariable variable=CC]`which gcc-9`"
+        echo "##vso[task.setvariable variable=CXX]`which g++-9`"
+
+    - task: CacheBeta@0
+      displayName: Cache vcpkg
+      inputs:
+        key: $(Build.SourcesDirectory)/vcpkg-x64-linux.txt | $(Build.SourcesDirectory)/.git/modules/external/vcpkg/HEAD | "$(Agent.OS)"
+        path: '$(vcpkgLocation)'
+
+    - task: lucappa.cmake-ninja-vcpkg-tasks.d855c326-b1c0-4d6f-b1c7-440ade6835fb.run-vcpkg@0
+      displayName: 'Run vcpkg'
+      inputs:
+        vcpkgArguments: '@$(Build.SourcesDirectory)/vcpkg-x64-linux.txt'
+        vcpkgDirectory: $(vcpkgLocation)
+
+    - task: lucappa.cmake-ninja-vcpkg-tasks.f2b1ec7d-bc54-4cc8-b9ed-1bc7f37c9dc6.run-cmake@0
+      displayName: 'Run CMake with CMakeSettings.json'
+      inputs:
+        cmakeListsOrSettingsJson: 'CMakeSettingsJson'
+        useVcpkgToolchainFile: true
+        configurationRegexFilter: 'WSL-Release'
+
+    - task: Bash@3
+      displayName: 'Run CTest'
+      inputs:
+        targetType: 'inline'
+        workingDirectory: $(Build.ArtifactStagingDirectory)/WSL-Release
+        script: 'ctest -v'
+
+- job: macos_10_14_hosted
+  pool:
+    vmImage: 'macOS-10.14'
+  steps:
+    - checkout: self
+      submodules: recursive
+
+    - task: Bash@3
+      displayName: 'Install gcc'
+      inputs:
+        targetType: 'inline'
+        script: 'brew install gcc meson openssl && sudo rm -rf /Library/Frameworks/Mono.framework/'
+
+    - task: CacheBeta@0
+      displayName: Cache vcpkg
+      inputs:
+        key: $(Build.SourcesDirectory)/vcpkg-x64-osx.txt | $(Build.SourcesDirectory)/.git/modules/external/vcpkg/HEAD | "$(Agent.OS)"
+        path: '$(vcpkgLocation)'
+
+    - task: lucappa.cmake-ninja-vcpkg-tasks.d855c326-b1c0-4d6f-b1c7-440ade6835fb.run-vcpkg@0
+      displayName: 'Run vcpkg'
+      inputs:
+        vcpkgArguments: '@$(Build.SourcesDirectory)/vcpkg-x64-osx.txt'
+        vcpkgDirectory: $(vcpkgLocation)
+
+    - task: lucappa.cmake-ninja-vcpkg-tasks.f2b1ec7d-bc54-4cc8-b9ed-1bc7f37c9dc6.run-cmake@0
+      displayName: 'Run CMake with CMakeSettings.json'
+      inputs:
+        cmakeListsOrSettingsJson: 'CMakeSettingsJson'
+        useVcpkgToolchainFile: true
+        configurationRegexFilter: 'WSL-Release'
+
+    - task: Bash@3
+      displayName: 'Run CTest'
+      inputs:
+        targetType: 'inline'
+        workingDirectory: $(Build.ArtifactStagingDirectory)/WSL-Release
+        script: 'ctest -v'
