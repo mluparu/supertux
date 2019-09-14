@@ -13,4 +13,5 @@ libvorbis
 openal-soft
 sdl2
 sdl2-image
-
+sqlite3
+`

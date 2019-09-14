@@ -14,3 +14,4 @@ openal-soft
 sdl2
 sdl2-image
 openssl
+sqlite3
