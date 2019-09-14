@@ -19,10 +19,10 @@ TEST(PlatformTest, create_platform)
     "   (name \"Platform\")\n"
     ")\n");
 
-  auto doc = ReaderDocument::from_stream(in);
-  auto root = doc.get_root();
+  const auto doc = ReaderDocument::from_stream(in);
+  const auto root = doc.get_root();
   ASSERT_EQ("platform", root.get_name());
-  ReaderMapping mapping = root.get_mapping();
+  const ReaderMapping mapping = root.get_mapping();
 
   Platform plat{};
   plat.set_pos(Vector(1.0001, 1.0001));
@@ -40,10 +40,10 @@ TEST(PlatformTest, create_long_platform)
     "   (name \"Platform\")\n"
     ")\n");
 
-  auto doc = ReaderDocument::from_stream(in);
-  auto root = doc.get_root();
+  const auto doc = ReaderDocument::from_stream(in);
+  const auto root = doc.get_root();
   ASSERT_EQ("platform", root.get_name());
-  ReaderMapping mapping = root.get_mapping();
+  const ReaderMapping mapping = root.get_mapping();
 
   std::vector<Platform> long_platform;
   for (int i = 0; i < LONG_PLATFORM_SIZE; ++i)
@@ -71,7 +71,7 @@ TEST(PlatformTest, create_rock_platform)
   const auto doc = ReaderDocument::from_stream(in);
   const auto root = doc.get_root();
   ASSERT_EQ("platform", root.get_name());
-  ReaderMapping mapping = root.get_mapping();
+  const ReaderMapping mapping = root.get_mapping();
 
   std::vector<Rock> long_platform;
   for (int i = 0; i < LONG_PLATFORM_SIZE; ++i)
@@ -81,7 +81,7 @@ TEST(PlatformTest, create_rock_platform)
     long_platform.push_back(plat);
   }
 
-  auto ret = find_longest_jump(Vector(14, 2.0f), long_platform);
+  const auto ret = find_longest_jump(Vector(14, 2.0f), long_platform);
   ASSERT_EQ(ret.get_pos().x, 0);
 
   ASSERT_EQ(long_platform.size(), LONG_PLATFORM_SIZE);
