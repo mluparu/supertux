@@ -1,4 +1,7 @@
 # SuperTux
+| OSes| Build|
+|--------|-|
+| macOS/Linux/Windows | [![Build Status](https://dev.azure.com/cppcon19devops/devops/_apis/build/status/supertux?branchName=master)](https://dev.azure.com/cppcon19devops/devops/_build/latest?definitionId=3&branchName=master)|
 
 [![Build Status](https://travis-ci.org/SuperTux/supertux.svg?branch=master)](https://travis-ci.org/SuperTux/supertux)
 [![AppVeyor Build Satus](https://ci.appveyor.com/api/projects/status/github/SuperTux/supertux?svg=true&branch=master)](https://ci.appveyor.com/project/supertux/supertux-9ml4d/branch/master)
