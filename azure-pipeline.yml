@@ -25,13 +25,13 @@ jobs:
         key: $(Build.SourcesDirectory)/vcpkg-x86-windows.txt | $(Build.SourcesDirectory)/.git/modules/external/vcpkg/HEAD | "$(Agent.OS)"
         path: '$(vcpkgLocation)'
 
-    - task: lucappa.cmake-ninja-vcpkg-tasks.d855c326-b1c0-4d6f-b1c7-440ade6835fb.run-vcpkg@0
+    - task: run-vcpkg@0
       displayName: 'Run vcpkg'
       inputs:
         vcpkgArguments: '@$(Build.SourcesDirectory)/vcpkg-x86-windows.txt'
         vcpkgDirectory: $(vcpkgLocation)
 
-    - task: lucappa.cmake-ninja-vcpkg-tasks.f2b1ec7d-bc54-4cc8-b9ed-1bc7f37c9dc6.run-cmake@0
+    - task: run-cmake@0
       displayName: 'Run CMake with CMakeSettings.json'
       inputs:
         cmakeListsOrSettingsJson: 'CMakeSettingsJson'
