@@ -1,26 +1,27 @@
 #include <vector>
 #include <memory>
 #include <object/gameplatform.hpp>
+#include <algorithm>
 
 using namespace game;
 
 template<typename ITER> void find_longest_platform(const ITER& input_begin, const ITER& input_end, std::pair<ITER, ITER>& output_range, typename std::iterator_traits<ITER>::value_type& output_value);
 
-const int initial = 7;
-const int hello = 40 + initial;
+constexpr int initial() noexcept { return 7; }
+constexpr int hello = 40 + initial();
 
 int* getItem(const std::vector<int>& result)
 {
-  int* retVal;
+  int* retVal{};
   if (result.size() > 4) 
     retVal = new int(result[4]);
   else
     *retVal = 0;
-  return 0;
+  return nullptr;
 }
 std::vector<int> make_a_vector() {
   const std::vector<int> result{ 1, 2, 3 };
-  auto* item = getItem(result);
+  const auto* item = getItem(result);
   if (!item)
     return std::move(result);
   else return {};
@@ -29,12 +30,12 @@ std::vector<int> make_a_vector() {
 Platform find_longest_jump(Vector currentPosition, const std::vector<Platform>& platform)
 {
   //TODO: Find curent sprite tux is sitting on
-  auto current = platform.begin();
-  //[&currentPosition](const Platform& it)
-  //  {
-  //    return (it.get_pos().x <= currentPosition.x &&
-  //      it.get_pos().x + it.get_width() >= currentPosition.x);
-  //  });
+  auto current = std::find_if(platform.begin(), platform.end(), 
+          [&currentPosition](const Platform& it)
+            {
+              return (it.get_pos().x <= currentPosition.x &&
+                it.get_pos().x + it.get_width() >= currentPosition.x);
+            });
 
   std::pair output_range{ current, platform.end() };
   Platform output_value{};
