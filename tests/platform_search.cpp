@@ -19,12 +19,13 @@ int* getItem(const std::vector<int>& result)
 std::vector<int> make_a_vector() {
   const std::vector<int> result{ 1, 2, 3 };
   int* item = getItem(result);
-  if (item == NULL)
+  if (!item)
     return std::move(result);
   else return {};
 }
 
-Platform find_longest_jump(Vector currentPosition, const std::vector<Platform>& platform)
+Platform find_longest_jump(Vector currentPosition,
+  const std::vector<Platform>& platform)
 {
   //TODO: Find curent sprite tux is sitting on
   auto current = platform.begin();

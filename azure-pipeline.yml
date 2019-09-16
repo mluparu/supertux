@@ -8,7 +8,6 @@ pr:
 - dev/*
 trigger:
 - master
-- dev/*
 
 jobs:
 
