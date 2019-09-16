@@ -4,12 +4,14 @@
 #include <physfs.h>
 #include <codecvt>
 #include <object/gameplatform.hpp>
+#include <sqlite3.h>
 
 using namespace game;
 #include "platform_search.h"
 
 TEST(PlatformTest, create_platform)
 {
+  sqlite3_libversion();
   PHYSFS_init("");
   std::istringstream in(
     "(platform\n"
