@@ -2,7 +2,6 @@
 #include <memory>
 #include <object/gameplatform.hpp>
 #include <algorithm>
-#include <sqlite3.h>
 
 using namespace game;
 
@@ -13,26 +12,23 @@ constexpr int hello = 40 + initial();
 
 int* getItem(const std::vector<int>& result)
 {
-  sqlite3_libversion();
   int* retVal{};
   if (result.size() > 4) 
-    retVal = new int(result[4]);
-  else
     *retVal = 0;
   return nullptr;
 }
 std::vector<int> make_a_vector() {
   const std::vector<int> result{ 1, 2, 3 };
-  const auto* item = getItem(result);
+  const int* item = getItem(result);
   if (!item)
     return std::move(result);
   else return {};
 }
 
-Platform find_longest_jump(Vector currentPosition, const std::vector<Platform>& platform)
+Platform find_longest_jump(Vector currentPosition,
+  const std::vector<Platform>& platform)
 {
-  //TODO: Find curent sprite tux is sitting on
-  auto current = std::find_if(platform.begin(), platform.end(),
+  auto current = std::find_if(platform.begin(), platform.end(), 
   [&currentPosition](const Platform& it)
     {
       return (it.get_pos().x <= currentPosition.x &&
